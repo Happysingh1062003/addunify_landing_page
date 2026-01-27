@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Addunify - Create, manage, and optimize ad campaigns across Google, Meta, LinkedIn, and X from a single dashboard using natural language.">
+    <title>Addunify | Run Ads Everywhere. Just Ask AI.</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function () {
+            // Initialize EmailJS with your public key
+            // Replace "YOUR_PUBLIC_KEY" with your actual public key from EmailJS dashboard
+            emailjs.init({
+                publicKey: "u4qUiHtTk7ht11tRQ",
+            });
+        })();
+    </script>
+</head>
+
+<body>
+    <!-- Animated Background Canvas -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- ===================== NAVBAR ===================== -->
+    <header class="navbar" id="navbar">
+        <div class="container navbar-content">
+            <a href="#" class="logo">
+                <span class="logo-text-bold">ADD</span><span class="logo-text-light">UNIFY</span>
+            </a>
+            <a href="#cta" class="btn btn-primary btn-nav">Join Waitlist</a>
+        </div>
+    </header>
+
+    <!-- ===================== HERO SECTION ===================== -->
+    <section class="hero" id="hero">
+        <div class="container hero-content">
+
+
+            <h1 class="hero-title">
+                Run Ads <span class="gradient-text">Everywhere.</span><br>
+                Just Ask AI.
+            </h1>
+
+            <p class="hero-subtitle">
+                The first platform that lets you generate, launch, and optimize campaigns
+                across Google, Meta, and LinkedIn using simple natural language prompts.
+            </p>
+
+            <!-- Email Signup Form -->
+            <form class="hero-form" id="waitlist-form">
+                <div class="input-wrapper">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" placeholder="Enter your email" required id="email-input" autocomplete="email">
+                </div>
+                <button type="submit" class="btn btn-primary btn-large">
+                    <span>Join Early Access</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
+
+
+
+            <!-- Platform Icons -->
+            <div class="platform-icons">
+                <span>Works with:</span>
+                <div class="icons">
+                    <i class="fab fa-google" title="Google Ads"></i>
+                    <i class="fab fa-meta" title="Meta"></i>
+                    <i class="fab fa-linkedin" title="LinkedIn"></i>
+                    <i class="fab fa-x-twitter" title="X (Twitter)"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Decorative Elements -->
+        <div class="hero-glow hero-glow-1"></div>
+        <div class="hero-glow hero-glow-2"></div>
+    </section>
+
+    <!-- ===================== FEATURES SECTION (BENTO GRID) ===================== -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Features</span>
+                <h2 class="section-title">Everything you need to <span class="gradient-text">dominate ads</span></h2>
+                <p class="section-subtitle">One platform. All platforms. Zero complexity.</p>
+            </div>
+
+            <div class="bento-grid">
+                <!-- Feature 1: Multi-Platform Control (Large) -->
+                <div class="bento-card bento-large">
+                    <div class="bento-icon">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <h3>Multi-Platform Control</h3>
+                    <p>Manage all your ad accounts from a single, unified dashboard. No more tab-switching chaos.</p>
+                    <div class="platform-badges">
+                        <span class="platform-badge"><i class="fab fa-google"></i> Google</span>
+                        <span class="platform-badge"><i class="fab fa-meta"></i> Meta</span>
+                        <span class="platform-badge"><i class="fab fa-linkedin"></i> LinkedIn</span>
+                        <span class="platform-badge"><i class="fab fa-x-twitter"></i> X</span>
+                    </div>
+                </div>
+
+                <!-- Feature 2: Natural Language Creation -->
+                <div class="bento-card">
+                    <div class="bento-icon bento-icon-purple">
+                        <i class="fas fa-wand-magic-sparkles"></i>
+                    </div>
+                    <h3>Text-to-Campaign</h3>
+                    <p>Describe your ad in plain English. AI builds the creative, audience, and targeting for you.</p>
+                    <div class="code-preview">
+                        <span class="code-comment">// Your prompt</span>
+                        <span class="code-string">"Run a campaign for my SaaS targeting startup founders..."</span>
+                    </div>
+                </div>
+
+                <!-- Feature 3: Auto-Optimization -->
+                <div class="bento-card">
+                    <div class="bento-icon bento-icon-blue">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Auto-Optimization</h3>
+                    <p>AI continuously reallocates budget to your best-performing channels. Maximize ROI on autopilot.
+                    </p>
+                    <div class="stat-preview">
+                        <div class="stat">
+                            <span class="stat-value">+47%</span>
+                            <span class="stat-label">Avg. ROAS Lift</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 4: Zero Learning Curve (Wide) -->
+                <div class="bento-card bento-wide">
+                    <div class="bento-content-row">
+                        <div class="bento-icon bento-icon-green">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <div class="bento-text">
+                            <h3>Zero Learning Curve</h3>
+                            <p>No certifications needed. No complex dashboards to master. If you can type, you can run
+                                world-class ad campaigns.</p>
+                        </div>
+                    </div>
+                    <div class="feature-tags">
+                        <span class="tag"><i class="fas fa-check"></i> No expertise required</span>
+                        <span class="tag"><i class="fas fa-check"></i> Launch in minutes</span>
+                        <span class="tag"><i class="fas fa-check"></i> Built for founders</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== HOW IT WORKS SECTION ===================== -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">How It Works</span>
+                <h2 class="section-title">From idea to live ads in <span class="gradient-text">4 steps</span></h2>
+                <p class="section-subtitle">It's really that simple. No kidding.</p>
+            </div>
+
+            <div class="steps-container">
+                <!-- Step 1 -->
+                <div class="step-card">
+                    <div class="step-number">01</div>
+                    <div class="step-icon">
+                        <i class="fas fa-link"></i>
+                    </div>
+                    <h3>Connect</h3>
+                    <p>Add your ads accounts from Google, Meta, LinkedIn, or X. One-click secure authentication.</p>
+                </div>
+
+                <!-- Connector -->
+                <div class="step-connector">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="step-card">
+                    <div class="step-number">02</div>
+                    <div class="step-icon">
+                        <i class="fas fa-message"></i>
+                    </div>
+                    <h3>Prompt</h3>
+                    <p>Describe your campaign goal in natural language. Tell us who you want to reach and what you want
+                        to achieve.</p>
+                </div>
+
+                <!-- Connector -->
+                <div class="step-connector">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="step-card">
+                    <div class="step-number">03</div>
+                    <div class="step-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h3>Generate</h3>
+                    <p>Our AI builds optimized audience segments, compelling creatives, and smart budget allocation —
+                        instantly.</p>
+                </div>
+
+                <!-- Connector -->
+                <div class="step-connector">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="step-card">
+                    <div class="step-number">04</div>
+                    <div class="step-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3>Launch</h3>
+                    <p>One click to go live across all platforms. Sit back and watch AI optimize your campaigns in
+                        real-time.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Decorative Glow -->
+        <div class="section-glow"></div>
+    </section>
+
+    <!-- ===================== CTA SECTION ===================== -->
+    <section class="cta-section" id="cta">
+        <div class="container">
+            <div class="cta-card">
+                <h2>Ready to transform your advertising?</h2>
+                <p>Join thousands of founders and marketers getting early access to the future of ads.</p>
+                <form class="cta-form" id="cta-form">
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" placeholder="Enter your email" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-large">
+                        <span>Get Early Access</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== FOOTER ===================== -->
+    <footer class="footer">
+        <div class="container footer-content-minimal">
+            <span class="footer-brand-minimal"><span class="logo-text-bold">ADD</span><span
+                    class="logo-text-light">UNIFY</span></span>
+            <a href="#" class="footer-link-minimal">Privacy & Terms</a>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+
+</html>
