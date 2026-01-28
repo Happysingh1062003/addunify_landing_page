@@ -142,15 +142,7 @@ img {
 }
 
 /* ===================== ANIMATED BACKGROUND ===================== */
-#bg-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: var(--z-background);
-    pointer-events: none;
-}
+
 
 /* ===================== BUTTONS ===================== */
 .btn {
@@ -273,9 +265,7 @@ img {
         background: #ffffff;
     }
 
-    #hero-canvas {
-        display: none !important;
-    }
+
 }
 
 .hero-content {
@@ -289,26 +279,7 @@ img {
     margin: 0 auto;
 }
 
-.hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    padding: 0.625rem 1.25rem;
-    background: #ffffff;
-    border: 1px solid rgba(139, 92, 246, 0.15);
-    border-radius: var(--radius-full);
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--color-text-secondary);
-    margin-bottom: var(--spacing-lg);
-    backdrop-filter: blur(10px);
 
-}
-
-.hero-badge i {
-    color: var(--color-accent-purple);
-    font-size: 0.9rem;
-}
 
 .hero-title {
     font-family: var(--font-heading);
@@ -320,6 +291,31 @@ img {
     color: #111;
 }
 
+/* Typewriter cursor effect */
+.hero-title::after {
+    content: '|';
+    font-weight: 300;
+    color: var(--color-accent-blue);
+    animation: blink 0.7s infinite;
+}
+
+.hero-title.typing-complete::after {
+    display: none;
+}
+
+@keyframes blink {
+
+    0%,
+    50% {
+        opacity: 1;
+    }
+
+    51%,
+    100% {
+        opacity: 0;
+    }
+}
+
 .hero-brand-badge {
     display: inline-flex;
     align-items: center;
@@ -327,6 +323,10 @@ img {
     margin-bottom: var(--spacing-lg);
     font-family: var(--font-heading);
     color: var(--color-text-secondary);
+    opacity: 0;
+    /* Hidden initially */
+    transform: translateY(10px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
 }
 
 .badge-tag {
@@ -347,6 +347,11 @@ img {
     gap: var(--spacing-sm);
     margin-bottom: var(--spacing-xl);
     flex-wrap: wrap;
+    opacity: 0;
+    /* Hidden initially */
+    transform: translateY(10px);
+    transition: opacity 0.8s ease 0.2s, transform 0.8s ease 0.2s;
+    /* Slight delay for buttons */
 }
 
 .btn-hero {
@@ -364,26 +369,7 @@ img {
     line-height: 1.7;
 }
 
-/* Hero Form */
-.hero-form {
-    display: flex;
-    align-items: stretch;
-    gap: var(--spacing-sm);
-    width: 100%;
-    max-width: 580px;
-    margin: 0 auto var(--spacing-lg);
-    padding: 6px;
-    background: #ffffff;
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    border-radius: 8px;
-    transition: all var(--transition-base);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-}
 
-.hero-form:focus-within {
-    border-color: rgba(0, 0, 0, 0.25);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-}
 
 .input-wrapper {
     flex: 1;
@@ -423,41 +409,9 @@ img {
     font-weight: 400;
 }
 
-.hero-form .btn-primary {
-    background: #000000;
-    color: #ffffff;
-    border: 2px solid #000000;
-    padding: 0.875rem 1.75rem;
-    flex-shrink: 0;
-    white-space: nowrap;
-    border-radius: 6px;
-    font-size: 0.95rem;
-    min-width: 170px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
 
-.hero-form .btn-primary:hover {
-    background: #ffffff;
-    color: #000000;
-    border-color: #000000;
-}
 
-.hero-trust {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--spacing-xs);
-    font-size: 0.875rem;
-    color: var(--color-text-muted);
-    margin-bottom: var(--spacing-xl);
-}
 
-.hero-trust i {
-    color: var(--color-accent-green);
-}
 
 /* Platform Icons */
 .platform-icons {
@@ -485,33 +439,7 @@ img {
     color: var(--color-text-primary);
 }
 
-/* Hero Glow Effects - Light Theme */
-.hero-glow {
-    position: absolute;
-    width: 600px;
-    height: 600px;
-    border-radius: 50%;
-    filter: blur(120px);
-    opacity: 0;
-    /* Hiding glow */
-    pointer-events: none;
-    display: none;
-    /* Ensure it's gone */
-}
 
-.hero-glow-1 {
-    top: 10%;
-    left: -10%;
-    background: #bae6fd;
-    /* Light sky blue */
-}
-
-.hero-glow-2 {
-    bottom: 10%;
-    right: -10%;
-    background: #e0e7ff;
-    /* Light indigo */
-}
 
 /* ===================== SECTION HEADERS ===================== */
 .section-header {

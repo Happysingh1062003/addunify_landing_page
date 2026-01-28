@@ -4,117 +4,81 @@
    ================================================================ */
 
 // ===================== UTILITIES =====================
-const isMobile = () => window.innerWidth < 768;
+
 
 // ===================== DOM ELEMENTS =====================
 const navbar = document.getElementById('navbar');
-const bgCanvas = document.getElementById('bg-canvas');
+
 const waitlistForm = document.getElementById('waitlist-form');
 const ctaForm = document.getElementById('cta-form');
 
-// ===================== ANIMATED BACKGROUND =====================
-class AnimatedBackground {
-    constructor(canvas) {
-        this.canvas = canvas;
-        this.ctx = canvas.getContext('2d');
-        this.particles = [];
-        // Optimize: Reduce particles on mobile devices
-        this.particleCount = isMobile() ? 60 : 180;
-        this.mouse = { x: null, y: null };
-        this.colors = ['#4285F4', '#EA4335', '#FBBC05', '#34A853', '#8B5CF6']; // Colorful palette
 
-        this.resize();
-        this.init();
-        this.animate();
 
-        // Event listeners
-        window.addEventListener('resize', () => {
-            this.resize();
-            // Re-initialize to adjust particle count if crossing breakpoint
-            const newCount = isMobile() ? 60 : 180;
-            if (this.particleCount !== newCount) {
-                this.particleCount = newCount;
-                this.init();
+// ===================== HERO TITLE TYPEWRITER ANIMATION (Smooth 60FPS) =====================
+(function () {
+    const heroTitle = document.querySelector('.hero-title');
+    const badge = document.querySelector('.hero-brand-badge');
+    const actions = document.querySelector('.hero-actions');
+
+    if (!heroTitle) return;
+
+    // Store original HTML content
+    const originalHTML = heroTitle.innerHTML;
+    const originalText = heroTitle.textContent.trim();
+
+    // Clear the title initially
+    heroTitle.innerHTML = '';
+    heroTitle.style.minHeight = heroTitle.offsetHeight + 'px'; // Prevent layout shift
+
+    let charIndex = 0;
+    let lastTime = 0;
+    const typingDelay = 40; // ms per character (faster for smooth feel)
+
+    function typeWriter(timestamp) {
+        if (!lastTime) lastTime = timestamp;
+
+        // Control speed
+        if (timestamp - lastTime >= typingDelay) {
+            // Add characters until we catch up or finish
+            while (timestamp - lastTime >= typingDelay && charIndex < originalText.length) {
+                const char = originalText.charAt(charIndex);
+
+                // Handle line breaks
+                if (charIndex === originalText.indexOf('Next-Gen') + 'Next-Gen'.length) {
+                    heroTitle.innerHTML += '<br>';
+                }
+
+                heroTitle.innerHTML += char === ' ' ? '&nbsp;' : char;
+                charIndex++;
+                lastTime += typingDelay;
             }
-        });
 
-        window.addEventListener('mousemove', (e) => {
-            this.mouse.x = e.clientX;
-            this.mouse.y = e.clientY;
-        });
+            // Check if complete
+            if (charIndex >= originalText.length) {
+                heroTitle.innerHTML = originalHTML;
+                heroTitle.classList.add('typing-complete');
 
-        // Visibility API to pause animation when tab is inactive
-        document.addEventListener('visibilitychange', () => {
-            this.paused = document.hidden;
-            if (!this.paused) this.animate();
-        });
-    }
-
-    resize() {
-        this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
-    }
-
-    init() {
-        this.particles = [];
-        for (let i = 0; i < this.particleCount; i++) {
-            this.particles.push({
-                x: Math.random() * this.canvas.width,
-                y: Math.random() * this.canvas.height,
-                radius: Math.random() * 2 + 0.5,
-                vx: (Math.random() - 0.5) * 0.5,
-                vy: (Math.random() - 0.5) * 0.5,
-                color: this.colors[Math.floor(Math.random() * this.colors.length)],
-            });
-        }
-    }
-
-    drawParticle(particle) {
-        this.ctx.beginPath();
-        this.ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
-        this.ctx.fillStyle = particle.color;
-        this.ctx.fill();
-    }
-
-    updateParticle(particle) {
-        particle.x += particle.vx;
-        particle.y += particle.vy;
-
-        // Mouse interaction - subtle repulsion
-        if (this.mouse.x && this.mouse.y) {
-            const dx = this.mouse.x - particle.x;
-            const dy = this.mouse.y - particle.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-
-            if (distance < 250) {
-                const force = (250 - distance) / 250;
-                const directionX = (dx / distance) * force * 0.6;
-                const directionY = (dy / distance) * force * 0.6;
-                particle.x -= directionX;
-                particle.y -= directionY;
+                // Reveal other elements smoothly
+                if (badge) {
+                    badge.style.opacity = '1';
+                    badge.style.transform = 'translateY(0)';
+                }
+                if (actions) {
+                    actions.style.opacity = '1';
+                    actions.style.transform = 'translateY(0)';
+                }
+                return; // Stop animation
             }
         }
 
-        // Wrap around edges
-        if (particle.x < 0) particle.x = this.canvas.width;
-        if (particle.x > this.canvas.width) particle.x = 0;
-        if (particle.y < 0) particle.y = this.canvas.height;
-        if (particle.y > this.canvas.height) particle.y = 0;
+        requestAnimationFrame(typeWriter);
     }
 
-    animate() {
-        if (this.paused) return;
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        for (const particle of this.particles) {
-            this.updateParticle(particle);
-            this.drawParticle(particle);
-        }
-        requestAnimationFrame(() => this.animate());
-    }
-}
-
-// Initialize animated background
-if (bgCanvas) new AnimatedBackground(bgCanvas);
+    // Start typing after a short delay
+    setTimeout(() => {
+        requestAnimationFrame(typeWriter);
+    }, 500);
+})();
 
 // ===================== NAVBAR SCROLL EFFECT =====================
 
@@ -165,20 +129,9 @@ function handleFormSubmit(form) {
 
         // Custom EmailJS Configuration
         const serviceID = "service_uttryev";
-        const templateID_Owner = "template_45llkdq"; // Send to YOU
-        const templateID_User = "template_zd3oz44";   // Send to USER
+        const templateID_User = "template_zd3oz44";   // Send to USER (Owner gets CC via EmailJS dashboard)
 
-        // 1. Owner Notification Params (No 'to_email' ensures it goes to default/you)
-        const ownerParams = {
-            user_email: email,
-            from_email: email,
-            reply_to: email,
-            message: "New waitlist signup from " + email
-        };
-
-        // 2. User Auto-Reply Params
-        // NOTE: Since you are receiving two emails, your User Template is likely CC'ing you.
-        // We will send ONLY the user template to prevent duplicates.
+        // User Auto-Reply Params
         const userParams = {
             to_email: email,
             user_email: email,
@@ -186,8 +139,7 @@ function handleFormSubmit(form) {
             reply_to: "your-email@addunify.com"
         };
 
-        // Send ONLY to User (Owner receives copy via CC/BCC in EmailJS dashboard)
-        // const sendToOwner = emailjs.send(serviceID, templateID_Owner, ownerParams);
+        // Send email to User (Owner receives copy via CC/BCC configured in EmailJS dashboard)
         const sendToUser = emailjs.send(serviceID, templateID_User, userParams);
 
         // Wait for user email
