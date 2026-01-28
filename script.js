@@ -3,9 +3,11 @@
    Animated Background, Smooth Scroll, and Interactivity
    ================================================================ */
 
+// ===================== UTILITIES =====================
+const isMobile = () => window.innerWidth < 768;
+
 // ===================== DOM ELEMENTS =====================
 const navbar = document.getElementById('navbar');
-
 const bgCanvas = document.getElementById('bg-canvas');
 const waitlistForm = document.getElementById('waitlist-form');
 const ctaForm = document.getElementById('cta-form');
@@ -16,7 +18,8 @@ class AnimatedBackground {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         this.particles = [];
-        this.particleCount = 180; // Increased count
+        // Optimize: Reduce particles on mobile devices
+        this.particleCount = isMobile() ? 60 : 180;
         this.mouse = { x: null, y: null };
         this.colors = ['#4285F4', '#EA4335', '#FBBC05', '#34A853', '#8B5CF6']; // Colorful palette
 
@@ -25,20 +28,25 @@ class AnimatedBackground {
         this.animate();
 
         // Event listeners
-        window.addEventListener('resize', () => this.resize());
+        window.addEventListener('resize', () => {
+            this.resize();
+            // Re-initialize to adjust particle count if crossing breakpoint
+            const newCount = isMobile() ? 60 : 180;
+            if (this.particleCount !== newCount) {
+                this.particleCount = newCount;
+                this.init();
+            }
+        });
+
         window.addEventListener('mousemove', (e) => {
             this.mouse.x = e.clientX;
             this.mouse.y = e.clientY;
         });
 
-        // Visibility API to pause animation
+        // Visibility API to pause animation when tab is inactive
         document.addEventListener('visibilitychange', () => {
-            if (document.hidden) {
-                this.paused = true;
-            } else {
-                this.paused = false;
-                this.animate();
-            }
+            this.paused = document.hidden;
+            if (!this.paused) this.animate();
         });
     }
 
@@ -53,12 +61,10 @@ class AnimatedBackground {
             this.particles.push({
                 x: Math.random() * this.canvas.width,
                 y: Math.random() * this.canvas.height,
-                radius: Math.random() * 2 + 0.5, // Smaller particles
+                radius: Math.random() * 2 + 0.5,
                 vx: (Math.random() - 0.5) * 0.5,
                 vy: (Math.random() - 0.5) * 0.5,
                 color: this.colors[Math.floor(Math.random() * this.colors.length)],
-                originalX: Math.random() * this.canvas.width,
-                originalY: Math.random() * this.canvas.height
             });
         }
     }
@@ -74,20 +80,17 @@ class AnimatedBackground {
         particle.x += particle.vx;
         particle.y += particle.vy;
 
-        // Mouse interaction - subtle repulsion/attraction
+        // Mouse interaction - subtle repulsion
         if (this.mouse.x && this.mouse.y) {
             const dx = this.mouse.x - particle.x;
             const dy = this.mouse.y - particle.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
 
             if (distance < 250) {
-                const forceDirectionX = dx / distance;
-                const forceDirectionY = dy / distance;
                 const force = (250 - distance) / 250;
-                const directionX = forceDirectionX * force * 0.6;
-                const directionY = forceDirectionY * force * 0.6;
-
-                particle.x -= directionX; // Repel slightly for "liftoff" feel
+                const directionX = (dx / distance) * force * 0.6;
+                const directionY = (dy / distance) * force * 0.6;
+                particle.x -= directionX;
                 particle.y -= directionY;
             }
         }
@@ -101,61 +104,48 @@ class AnimatedBackground {
 
     animate() {
         if (this.paused) return;
-
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-        // Update and draw particles
         for (const particle of this.particles) {
             this.updateParticle(particle);
             this.drawParticle(particle);
         }
-
         requestAnimationFrame(() => this.animate());
     }
 }
 
 // Initialize animated background
-if (bgCanvas) {
-    new AnimatedBackground(bgCanvas);
-}
+if (bgCanvas) new AnimatedBackground(bgCanvas);
 
 // ===================== NAVBAR SCROLL EFFECT =====================
 
+let scrollTicking = false;
 function handleNavbarScroll() {
-    const currentScroll = window.scrollY;
-
-    if (currentScroll > 50) {
-        navbar.classList.add('scrolled');
-    } else {
-        navbar.classList.remove('scrolled');
+    if (!scrollTicking) {
+        window.requestAnimationFrame(() => {
+            if (window.scrollY > 50) navbar.classList.add('scrolled');
+            else navbar.classList.remove('scrolled');
+            scrollTicking = false;
+        });
+        scrollTicking = true;
     }
 }
-
 window.addEventListener('scroll', handleNavbarScroll, { passive: true });
-
-
 
 // ===================== SMOOTH SCROLL =====================
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
         const target = document.querySelector(this.getAttribute('href'));
-
         if (target) {
             const navbarHeight = navbar.offsetHeight;
             const targetPosition = target.getBoundingClientRect().top + window.scrollY - navbarHeight;
-
-            window.scrollTo({
-                top: targetPosition,
-                behavior: 'smooth'
-            });
+            window.scrollTo({ top: targetPosition, behavior: 'smooth' });
         }
     });
 });
 
-// ===================== FORM HANDLING =====================
 // ===================== FORM HANDLING WITH EMAILJS =====================
-function handleFormSubmit(form, inputId) {
+function handleFormSubmit(form) {
     form.addEventListener('submit', function (e) {
         e.preventDefault();
 
@@ -169,53 +159,52 @@ function handleFormSubmit(form, inputId) {
             return;
         }
 
-        // Disable button and show loading state
+        // UX: Disable button and show loading state
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Joining...';
 
-        // EmailJS Configuration - REPLACE THESE WITH YOUR ACTUAL IDS
+        // Custom EmailJS Configuration
         const serviceID = "service_uttryev";
-        const templateID_Owner = "template_45llkdq"; // For sending to you
-        const templateID_User = "template_zd3oz44";   // For auto-reply to user
+        const templateID_Owner = "template_45llkdq"; // Send to YOU
+        const templateID_User = "template_zd3oz44";   // Send to USER
 
-        // Parameters to send to the templates
-        const templateParams = {
-            user_email: email,  // Common convention
-            to_email: email,    // Specific for our guide
-            email: email,       // Fallback if they used {{email}}
-            reply_to: email,    // For "Reply-To" field
+        // 1. Owner Notification Params (No 'to_email' ensures it goes to default/you)
+        const ownerParams = {
+            user_email: email,
+            from_email: email,
+            reply_to: email,
             message: "New waitlist signup from " + email
         };
 
-        // Send Email to Owner
-        const sendToOwner = emailjs.send(serviceID, templateID_Owner, templateParams);
+        // 2. User Auto-Reply Params
+        // NOTE: Since you are receiving two emails, your User Template is likely CC'ing you.
+        // We will send ONLY the user template to prevent duplicates.
+        const userParams = {
+            to_email: email,
+            user_email: email,
+            email: email,
+            reply_to: "your-email@addunify.com"
+        };
 
-        // Send Auto-reply to User (optional, depends on your plan/setup but requested by user)
-        // If you only have one template, you can rely on the first one if configured correctly,
-        // but here we explicitily call twice for clear separation as requested.
-        const sendToUser = emailjs.send(serviceID, templateID_User, templateParams);
+        // Send ONLY to User (Owner receives copy via CC/BCC in EmailJS dashboard)
+        // const sendToOwner = emailjs.send(serviceID, templateID_Owner, ownerParams);
+        const sendToUser = emailjs.send(serviceID, templateID_User, userParams);
 
-        // Wait for both emails to be sent (or at least the owner notification)
-        Promise.all([sendToOwner, sendToUser])
+        // Wait for user email
+        sendToUser
             .then(() => {
                 showFormSuccess(form);
                 emailInput.value = '';
                 submitBtn.innerHTML = '<i class="fas fa-check"></i> Joined!';
 
-                // Reset button after success message fades
                 setTimeout(() => {
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = originalBtnContent;
                 }, 5000);
             })
             .catch((error) => {
-                console.error('FAILED...', error);
-                // Show detailed error for debugging
-                let errorMsg = 'Something went wrong.';
-                if (error.text) errorMsg += ' ' + error.text;
-                else if (error.message) errorMsg += ' ' + error.message;
-
-                showFormError(form, errorMsg);
+                console.error('EmailJS Error:', error);
+                showFormError(form, 'Something went wrong. Please try again.');
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalBtnContent;
             });
@@ -223,39 +212,31 @@ function handleFormSubmit(form, inputId) {
 }
 
 function validateEmail(email) {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
 function showFormSuccess(form) {
-    // Create success message
     const existingMsg = form.parentNode.querySelector('.form-message');
     if (existingMsg) existingMsg.remove();
 
     const successMsg = document.createElement('div');
     successMsg.className = 'form-message form-success';
     successMsg.innerHTML = '<i class="fas fa-check-circle"></i> You\'re on the list! We\'ll be in touch soon.';
+    // Styles moved to CSS class ideally, but keeping inline for strict adherence to request
     successMsg.style.cssText = `
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        margin-top: 12px;
-        padding: 12px 20px;
-        background: rgba(34, 197, 94, 0.1);
-        border: 1px solid rgba(34, 197, 94, 0.3);
-        border-radius: 12px;
-        color: #22c55e;
-        font-size: 0.9rem;
-        font-weight: 500;
+        display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 12px;
+        padding: 12px 20px; background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3);
+        border-radius: 12px; color: #22c55e; font-size: 0.9rem; font-weight: 500;
+        opacity: 0; transition: opacity 0.3s ease;
     `;
 
     form.parentNode.insertBefore(successMsg, form.nextSibling);
 
-    // Remove message after 5 seconds
+    // Animate in
+    requestAnimationFrame(() => successMsg.style.opacity = '1');
+
     setTimeout(() => {
         successMsg.style.opacity = '0';
-        successMsg.style.transition = 'opacity 0.3s ease';
         setTimeout(() => successMsg.remove(), 300);
     }, 5000);
 }
@@ -268,50 +249,37 @@ function showFormError(form, message) {
     errorMsg.className = 'form-message form-error';
     errorMsg.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
     errorMsg.style.cssText = `
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        margin-top: 12px;
-        padding: 12px 20px;
-        background: rgba(239, 68, 68, 0.1);
-        border: 1px solid rgba(239, 68, 68, 0.3);
-        border-radius: 12px;
-        color: #ef4444;
-        font-size: 0.9rem;
-        font-weight: 500;
+        display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 12px;
+        padding: 12px 20px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3);
+        border-radius: 12px; color: #ef4444; font-size: 0.9rem; font-weight: 500;
+        opacity: 0; transition: opacity 0.3s ease;
     `;
 
     form.parentNode.insertBefore(errorMsg, form.nextSibling);
+    requestAnimationFrame(() => errorMsg.style.opacity = '1');
 
-    // Remove message after 3 seconds
     setTimeout(() => {
         errorMsg.style.opacity = '0';
-        errorMsg.style.transition = 'opacity 0.3s ease';
         setTimeout(() => errorMsg.remove(), 300);
     }, 3000);
 }
 
-// Initialize form handlers
+// Initialize forms
 if (waitlistForm) handleFormSubmit(waitlistForm);
 if (ctaForm) handleFormSubmit(ctaForm);
 
 // ===================== INTERSECTION OBSERVER FOR ANIMATIONS =====================
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-};
-
+const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
 const fadeInObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             entry.target.style.opacity = '1';
             entry.target.style.transform = 'translateY(0)';
+            fadeInObserver.unobserve(entry.target); // Stop observing once animated
         }
     });
 }, observerOptions);
 
-// Add animation to cards
 document.querySelectorAll('.bento-card, .step-card').forEach(card => {
     card.style.opacity = '0';
     card.style.transform = 'translateY(20px)';
@@ -319,17 +287,10 @@ document.querySelectorAll('.bento-card, .step-card').forEach(card => {
     fadeInObserver.observe(card);
 });
 
-// ===================== STAGGER ANIMATION FOR BENTO CARDS =====================
-const bentoCards = document.querySelectorAll('.bento-card');
-bentoCards.forEach((card, index) => {
-    card.style.transitionDelay = `${index * 0.2}s`;
-});
+// Stagger delays
+document.querySelectorAll('.bento-card').forEach((card, index) => card.style.transitionDelay = `${index * 0.1}s`);
+document.querySelectorAll('.step-card').forEach((card, index) => card.style.transitionDelay = `${index * 0.15}s`);
 
-const stepCards = document.querySelectorAll('.step-card');
-stepCards.forEach((card, index) => {
-    card.style.transitionDelay = `${index * 0.15}s`;
-});
-
-// ===================== CONSOLE MESSAGE =====================
+// Console Signature
 console.log('%c🚀 Addunify', 'font-size: 24px; font-weight: bold; color: #111111;');
 console.log('%cBuilt for the future of marketing.', 'font-size: 14px; color: #666;');
